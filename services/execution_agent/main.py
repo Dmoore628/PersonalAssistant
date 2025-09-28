@@ -1,10 +1,12 @@
-from fastapi import FastAPI
-from archi_core import Settings, Health, MessageBus
 import json
+
+from archi_core import Health, MessageBus, Settings
+from fastapi import FastAPI
 
 settings = Settings()
 app = FastAPI(title="Execution Agent")
 bus = MessageBus(url=settings.rabbitmq_url)
+
 
 @app.get("/health", response_model=Health)
 def health():

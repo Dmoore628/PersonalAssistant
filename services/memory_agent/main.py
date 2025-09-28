@@ -1,12 +1,16 @@
-from fastapi import FastAPI
-from archi_core import Settings, Health, MessageBus
-from neo4j import GraphDatabase
 import json
+
+from archi_core import Health, MessageBus, Settings
+from fastapi import FastAPI
+from neo4j import GraphDatabase
 
 settings = Settings()
 app = FastAPI(title="Memory Agent")
 bus = MessageBus(url=settings.rabbitmq_url)
-driver = GraphDatabase.driver(settings.neo4j_url, auth=(settings.neo4j_user, settings.neo4j_password))
+driver = GraphDatabase.driver(
+    settings.neo4j_url, auth=(settings.neo4j_user, settings.neo4j_password)
+)
+
 
 @app.get("/health", response_model=Health)
 def health():

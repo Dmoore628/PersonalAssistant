@@ -1,5 +1,6 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
-from typing import Optional, List
 
 
 class Health(BaseModel):
@@ -11,7 +12,7 @@ class TaskIn(BaseModel):
     title: str = Field(min_length=1)
     description: Optional[str] = None
     priority: Optional[int] = Field(default=3, ge=1, le=5)
-    tags: List[str] = []
+    tags: list[str] = []
 
 
 class PlanMessage(BaseModel):
@@ -19,5 +20,5 @@ class PlanMessage(BaseModel):
     title: str
     description: Optional[str] = None
     priority: int = 3
-    tags: List[str] = []
+    tags: list[str] = []
     source: str = "planning"

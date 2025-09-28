@@ -1,8 +1,9 @@
+from archi_core import Health, Settings
 from fastapi import FastAPI
-from archi_core import Settings, Health
 
 settings = Settings()
 app = FastAPI(title="Tool Creation Agent")
+
 
 @app.get("/health", response_model=Health)
 def health():

@@ -1,11 +1,14 @@
-from loguru import logger as _logger
 import os
+import sys
+
+from loguru import logger as _logger
 
 # Configure loguru with sane defaults for containers
 level = os.getenv("LOG_LEVEL", "INFO")
 _logger.remove()
+
 _logger.add(
-    sink=lambda msg: print(msg, end=""),
+    sink=sys.stdout,
     level=level,
     backtrace=False,
     diagnose=False,

@@ -1,11 +1,13 @@
-from fastapi import FastAPI
-from archi_core import Settings, Health, MessageBus
-from archi_core.schemas import TaskIn, PlanMessage
 import uuid
+
+from archi_core import Health, MessageBus, Settings
+from archi_core.schemas import PlanMessage, TaskIn
+from fastapi import FastAPI
 
 settings = Settings()
 app = FastAPI(title="Planning Agent")
 bus = MessageBus(url=settings.rabbitmq_url)
+
 
 @app.get("/health", response_model=Health)
 def health():

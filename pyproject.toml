@@ -26,3 +26,32 @@ python_files = ["tests.py", "test_*.py", "*_tests.py"]
 [tool.coverage.run]
 branch = true
 source = ["libs", "services"]
+
+[project]
+name = "PersonalAssistant"
+version = "0.1"
+description = "Archi AI Digital Twin System"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "neo4j",
+    "pika",
+    "pvporcupine",
+    "sounddevice",
+    "pygetwindow",
+    "pyautogui",
+    "opencv-python",
+    "numpy"
+]
+
+[project.scripts]
+start-assistant = "services.voice_processing.main:start_hud_overlay"

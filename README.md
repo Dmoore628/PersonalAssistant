@@ -39,6 +39,57 @@ This repository contains the initial scaffolding for the Archi AI Digital Twin s
 - For each PR, complete the PR checklist and add a log under `docs/validation/logs/` using `TEMPLATE.md`.
 - Record environment, steps, and results of lint/type/test/container checks.
 
+## Application Setup and Usage
+
+### Prerequisites
+- Docker and Docker Compose installed.
+- Python 3.11 installed.
+
+### Setup Instructions
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Dmoore628/PersonalAssistant.git
+   cd PersonalAssistant
+   ```
+
+2. Build and start the services:
+   ```bash
+   docker-compose -f infra/docker-compose.yml up --build
+   ```
+
+3. Verify service health endpoints:
+   - `learning-agent`: [http://localhost:8016/health](http://localhost:8016/health)
+   - `memory-agent`: [http://localhost:8013/health](http://localhost:8013/health)
+   - `planning-agent`: [http://localhost:8011/health](http://localhost:8011/health)
+   - `security-agent`: [http://localhost:8014/health](http://localhost:8014/health)
+   - `tool-creation-agent`: [http://localhost:8015/health](http://localhost:8015/health)
+   - `execution-agent`: [http://localhost:8012/health](http://localhost:8012/health)
+
+### RabbitMQ
+- Default credentials:
+  - User: `archi`
+  - Password: `archi_secret`
+- Management UI: [http://localhost:15672](http://localhost:15672)
+
+### Neo4j
+- Default credentials:
+  - User: `neo4j`
+  - Password: `neo4j_secret`
+- Browser UI: [http://localhost:7474](http://localhost:7474)
+
+### Testing
+- Run unit tests:
+  ```bash
+  pytest tests/
+  ```
+
+### Notes
+- Ensure all environment variables are correctly set in `docker-compose.yml`.
+- For troubleshooting, check container logs:
+  ```bash
+  docker-compose -f infra/docker-compose.yml logs
+  ```
+
 ### Quick commands (PowerShell)
 - Lint/format/typecheck: `./scripts/lint.ps1`
 - Run tests: `./scripts/test.ps1`

@@ -223,6 +223,23 @@ services:
     # environment:
     #   - DISPLAY=${DISPLAY}
 
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: services/orchestrator/Dockerfile
+    container_name: archi-orchestrator
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=orchestrator
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${ORCHESTRATOR_PORT:-8020}:8000"
+    networks:
+      - archi-net
+
 networks:
   archi-net:
     driver: bridge

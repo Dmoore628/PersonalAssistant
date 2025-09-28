@@ -1,7 +1,9 @@
-import pika
+import threading
 from dataclasses import dataclass
 from typing import Callable
-import threading
+
+import pika
+
 
 @dataclass
 class MessageBus:
@@ -20,7 +22,9 @@ class MessageBus:
         channel.basic_consume(queue=queue, on_message_callback=_callback)
         channel.start_consuming()
 
-    def consume_in_background(self, queue: str, handler: Callable[[bytes], None]) -> threading.Thread:
+    def consume_in_background(
+        self, queue: str, handler: Callable[[bytes], None]
+    ) -> threading.Thread:
         t = threading.Thread(target=self.consume, args=(queue, handler), daemon=True)
         t.start()
         return t

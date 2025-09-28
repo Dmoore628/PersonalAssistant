@@ -162,6 +162,40 @@ services:
     networks:
       - archi-net
 
+  voice-processing-agent:
+    build:
+      context: ..
+      dockerfile: services/voice_processing_agent/Dockerfile
+    container_name: archi-voice-processing-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=voice-processing-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${VOICE_PORT:-8017}:8000"
+    networks:
+      - archi-net
+
+  hud-overlay-agent:
+    build:
+      context: ..
+      dockerfile: services/hud_overlay_agent/Dockerfile
+    container_name: archi-hud-overlay-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=hud-overlay-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${HUD_PORT:-8018}:8000"
+    networks:
+      - archi-net
+
 networks:
   archi-net:
     driver: bridge

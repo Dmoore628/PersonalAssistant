@@ -1,0 +1,6 @@
+# System Orchestrator Requirements  
+requests>=2.31.0
+
+# Development dependencies
+pytest>=7.4.0
+pytest-asyncio>=0.21.1

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "UP", "B", "C4", "PIE", "T20", "ISC", "PT", "RET", "SIM", "PTH", "RUF"]
+ignore = ["E501"]
+exclude = ["venv", "build", "dist", ".git", ".venv"]
+
+[tool.mypy]
+python_version = "3.11"
+show_error_codes = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+strict = false
+
+[tool.pytest.ini_options]
+addopts = "-q"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+
+[tool.coverage.run]
+branch = true
+source = ["libs", "services"]

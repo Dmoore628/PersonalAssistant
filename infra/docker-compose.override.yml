@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  planning-agent:
+    volumes:
+      - ../services/planning_agent:/workspace/services/planning_agent
+      - ../libs/archi_core:/workspace/libs/archi_core
+    working_dir: /workspace/services/planning_agent
+    command: ["/bin/sh", "-lc", "pip install -e /workspace/libs/archi_core && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+
+  execution-agent:
+    volumes:
+      - ../services/execution_agent:/workspace/services/execution_agent
+      - ../libs/archi_core:/workspace/libs/archi_core
+    working_dir: /workspace/services/execution_agent
+    command: ["/bin/sh", "-lc", "pip install -e /workspace/libs/archi_core && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+
+  memory-agent:
+    volumes:
+      - ../services/memory_agent:/workspace/services/memory_agent
+      - ../libs/archi_core:/workspace/libs/archi_core
+    working_dir: /workspace/services/memory_agent
+    command: ["/bin/sh", "-lc", "pip install -e /workspace/libs/archi_core && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+
+  security-agent:
+    volumes:
+      - ../services/security_agent:/workspace/services/security_agent
+      - ../libs/archi_core:/workspace/libs/archi_core
+    working_dir: /workspace/services/security_agent
+    command: ["/bin/sh", "-lc", "pip install -e /workspace/libs/archi_core && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+
+  tool-creation-agent:
+    volumes:
+      - ../services/tool_creation_agent:/workspace/services/tool_creation_agent
+      - ../libs/archi_core:/workspace/libs/archi_core
+    working_dir: /workspace/services/tool_creation_agent
+    command: ["/bin/sh", "-lc", "pip install -e /workspace/libs/archi_core && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+
+  learning-agent:
+    volumes:
+      - ../services/learning_agent:/workspace/services/learning_agent
+      - ../libs/archi_core:/workspace/libs/archi_core
+    working_dir: /workspace/services/learning_agent
+    command: ["/bin/sh", "-lc", "pip install -e /workspace/libs/archi_core && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]

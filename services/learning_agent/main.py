@@ -296,9 +296,17 @@ def update_user_preferences_from_feedback(feedback: LearningFeedback):
     prefs = user_preferences[role]
 
     # Adapt preferences based on feedback
-    if feedback.feedback_type == "negative" and "too slow" in (feedback.comment or "").lower() and prefs["preferred_speed"] == "normal":
+    if (
+        feedback.feedback_type == "negative"
+        and "too slow" in (feedback.comment or "").lower()
+        and prefs["preferred_speed"] == "normal"
+    ):
         prefs["preferred_speed"] = "fast"
-    elif feedback.feedback_type == "negative" and "too fast" in (feedback.comment or "").lower() and prefs["preferred_speed"] == "normal":
+    elif (
+        feedback.feedback_type == "negative"
+        and "too fast" in (feedback.comment or "").lower()
+        and prefs["preferred_speed"] == "normal"
+    ):
         prefs["preferred_speed"] = "slow"
 
     # Adjust confirmation preferences

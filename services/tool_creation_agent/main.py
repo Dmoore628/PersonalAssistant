@@ -235,7 +235,7 @@ if __name__ == "__main__":
     # Exit with appropriate code
     sys.exit(0 if result.get("status") == "success" else 1)
 '''
-    
+
     return script_template
 
 
@@ -398,7 +398,7 @@ def main():
 if __name__ == "__main__":
     exit(main())
 '''
-    
+
     return integration_template
 
 

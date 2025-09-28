@@ -1,0 +1,170 @@
+version: "3.9"
+
+name: archi
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: archi-rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-archi}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-archi_secret}
+    networks:
+      - archi-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  neo4j:
+    image: neo4j:5.22
+    container_name: archi-neo4j
+    ports:
+      - "${NEO4J_BOLT_PORT:-7687}:7687"
+      - "${NEO4J_HTTP_PORT:-7474}:7474"
+    environment:
+      NEO4J_AUTH: "neo4j/${NEO4J_PASSWORD:-neo4j_secret}"
+      NEO4J_dbms_connector_bolt_advertised__address: "neo4j:7687"
+      NEO4JLABS_PLUGINS: "[\"apoc\"]"
+      NEO4J_apoc_export_file_enabled: "true"
+      NEO4J_apoc_import_file_enabled: "true"
+      NEO4J_apoc_import_file_use__neo4j__config: "true"
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - archi-net
+    healthcheck:
+      test: ["CMD", "cypher-shell", "--non-interactive", "-u", "neo4j", "-p", "${NEO4J_PASSWORD:-neo4j_secret}", "RETURN 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  # Optional for later phases (disabled by default). Uncomment to enable.
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+  #   container_name: archi-elasticsearch
+  #   environment:
+  #     discovery.type: single-node
+  #     xpack.security.enabled: "false"
+  #     ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+  #   ports:
+  #     - "${ELASTIC_PORT:-9200}:9200"
+  #   networks:
+  #     - archi-net
+
+  planning-agent:
+    build:
+      context: ..
+      dockerfile: services/planning_agent/Dockerfile
+    container_name: archi-planning-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=planning-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${PLANNING_PORT:-8011}:8000"
+    networks:
+      - archi-net
+
+  execution-agent:
+    build:
+      context: ..
+      dockerfile: services/execution_agent/Dockerfile
+    container_name: archi-execution-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=execution-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${EXECUTION_PORT:-8012}:8000"
+    networks:
+      - archi-net
+
+  memory-agent:
+    build:
+      context: ..
+      dockerfile: services/memory_agent/Dockerfile
+    container_name: archi-memory-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=memory-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+      - NEO4J_URL=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-neo4j_secret}
+    depends_on:
+      - rabbitmq
+      - neo4j
+    ports:
+      - "${MEMORY_PORT:-8013}:8000"
+    networks:
+      - archi-net
+
+  security-agent:
+    build:
+      context: ..
+      dockerfile: services/security_agent/Dockerfile
+    container_name: archi-security-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=security-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${SECURITY_PORT:-8014}:8000"
+    networks:
+      - archi-net
+
+  tool-creation-agent:
+    build:
+      context: ..
+      dockerfile: services/tool_creation_agent/Dockerfile
+    container_name: archi-tool-creation-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=tool-creation-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${TOOL_PORT:-8015}:8000"
+    networks:
+      - archi-net
+
+  learning-agent:
+    build:
+      context: ..
+      dockerfile: services/learning_agent/Dockerfile
+    container_name: archi-learning-agent
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=learning-agent
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${LEARNING_PORT:-8016}:8000"
+    networks:
+      - archi-net
+
+networks:
+  archi-net:
+    driver: bridge
+
+volumes:
+  neo4j_data:

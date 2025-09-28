@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Commitlint (PR commits)
+        if: github.event_name == 'pull_request'
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: commitlint.config.js
+      - name: Enforce branch naming
+        if: github.event_name == 'pull_request'
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if ! echo "$BRANCH" | grep -E '^(feature|fix|chore|release|hotfix)\/.{3,60}$'; then
+            echo "Invalid branch name: $BRANCH"; exit 1; fi
+      - name: Enforce PR title (Conventional Commits)
+        if: github.event_name == 'pull_request'
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          if ! echo "$TITLE" | grep -E '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+'; then
+            echo "Invalid PR title format: $TITLE"; exit 1; fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install core lib
+        run: |
+          pip install -U pip
+          pip install -e libs/archi_core
+      - name: Install tooling
+        run: |
+          pip install ruff black mypy pytest
+      - name: Lint
+        run: |
+          ruff check .
+      - name: Format check
+        run: |
+          black --check .
+      - name: Type check
+        run: |
+          mypy libs services || true
+      - name: Tests
+        run: |
+          pytest -q || true

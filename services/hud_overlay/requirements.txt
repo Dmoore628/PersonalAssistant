@@ -1,0 +1,14 @@
+# HUD Overlay Requirements
+psutil>=5.9.0
+requests>=2.31.0
+
+# Real-time UI libraries (mock dependencies - replace with real ones)  
+# tkinter  # Built-in Python GUI library for basic overlay testing
+# pygame>=2.5.0  # For cross-platform graphics and overlay testing
+# For Windows DirectX implementation:
+# pywin32>=305  # Windows APIs
+# DirectX Python bindings would be custom
+
+# Development dependencies
+pytest>=7.4.0
+pytest-asyncio>=0.21.1

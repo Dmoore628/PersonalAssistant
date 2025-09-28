@@ -162,6 +162,67 @@ services:
     networks:
       - archi-net
 
+  voice-engine:
+    build:
+      context: ..
+      dockerfile: services/voice_engine/Dockerfile
+    container_name: archi-voice-engine
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=voice-engine
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${VOICE_PORT:-8017}:8000"
+    networks:
+      - archi-net
+    # Uncomment for real audio processing
+    # devices:
+    #   - /dev/snd:/dev/snd
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+  hud-overlay:
+    build:
+      context: ..
+      dockerfile: services/hud_overlay/Dockerfile
+    container_name: archi-hud-overlay
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=hud-overlay
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${HUD_PORT:-8018}:8000"
+    networks:
+      - archi-net
+
+  cua-engine:
+    build:
+      context: ..
+      dockerfile: services/cua_engine/Dockerfile
+    container_name: archi-cua-engine
+    env_file:
+      - ../.env
+    environment:
+      - SERVICE_NAME=cua-engine
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-archi}:${RABBITMQ_PASSWORD:-archi_secret}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "${CUA_PORT:-8019}:8000"
+    networks:
+      - archi-net
+    # Uncomment for screen capture on Linux
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    # environment:
+    #   - DISPLAY=${DISPLAY}
+
 networks:
   archi-net:
     driver: bridge
